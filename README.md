@@ -1,2 +1,0 @@
-# DAxGENAI-WEB
-Web Application.
