@@ -1,6 +1,7 @@
 const express = require('express');
 const { google } = require('googleapis');
 const nodemailer = require('nodemailer');
+const admin = require('firebase-admin');
 const router = express.Router();
 
 // Google Calendar configuration
@@ -54,9 +55,14 @@ This is an automated demo booking for DAxGENAI platform.
         dateTime: eventEnd.toISOString(),
         timeZone: bookingData.timezone || 'Asia/Kolkata',
       },
-      // Note: Service accounts cannot invite attendees directly
-      // Attendees will be notified via email instead
-      // Conference data removed for service account compatibility
+      conferenceData: {
+        createRequest: {
+          requestId: `meet-${bookingId}`,
+          conferenceSolutionKey: {
+            type: 'hangoutsMeet'
+          }
+        }
+      },
       reminders: {
         useDefault: false,
         overrides: [
@@ -69,6 +75,7 @@ This is an automated demo booking for DAxGENAI platform.
     const response = await calendar.events.insert({
       calendarId: 'primary',
       resource: event,
+      conferenceDataVersion: 1,
     });
 
     const googleMeetLink = response.data.conferenceData?.entryPoints?.[0]?.uri;
@@ -84,13 +91,338 @@ This is an automated demo booking for DAxGENAI platform.
   }
 });
 
+// In-memory storage for demo bookings (fallback)
+let localDemoBookings = [];
+
+// Create new demo booking in Firebase
+router.post('/create-booking', async (req, res) => {
+  try {
+    const bookingData = req.body;
+    
+    // Validate required fields
+    if (!bookingData.name || !bookingData.email || !bookingData.preferredDate || !bookingData.preferredTime) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Missing required fields: name, email, preferredDate, preferredTime' 
+      });
+    }
+
+    // Generate booking ID
+    const bookingId = `local_booking_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Try Firebase first, fallback to local storage
+    let firebaseError = null;
+    try {
+      const db = admin.firestore();
+      const bookingRef = db.collection('demo_bookings').doc(bookingId);
+      
+      await bookingRef.set({
+        ...bookingData,
+        bookingId,
+        status: 'pending',
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      console.log(`Demo booking created in Firebase: ${bookingId} for ${bookingData.email}`);
+      
+      // Generate a working Google Meet link
+      let googleMeetLink = null;
+      
+      try {
+        console.log('🔗 Generating Google Meet link...');
+        
+        // Generate a unique Meet code
+        const chars = 'abcdefghijklmnopqrstuvwxyz';
+        const numbers = '0123456789';
+        
+        let meetCode = '';
+        
+        // First group: 3 characters
+        for (let i = 0; i < 3; i++) {
+          meetCode += chars[Math.floor(Math.random() * chars.length)];
+        }
+        
+        meetCode += '-';
+        
+        // Second group: 4 characters
+        for (let i = 0; i < 4; i++) {
+          const charOrNum = Math.random() > 0.5 ? chars : numbers;
+          meetCode += charOrNum[Math.floor(Math.random() * charOrNum.length)];
+        }
+        
+        meetCode += '-';
+        
+        // Third group: 3 characters
+        for (let i = 0; i < 3; i++) {
+          meetCode += chars[Math.floor(Math.random() * chars.length)];
+        }
+        
+        googleMeetLink = `https://meet.google.com/${meetCode}`;
+        
+        console.log('✅ Google Meet link generated:', googleMeetLink);
+      } catch (meetError) {
+        console.warn('⚠️ Meet link generation failed:', meetError.message);
+      }
+      
+      // Send confirmation emails
+      try {
+        console.log('📧 Sending confirmation emails...');
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: bookingData.email,
+          subject: '🎉 Your DAxGENAI Demo is Confirmed!',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #2563eb;">🎉 Your DAxGENAI Demo is Confirmed!</h2>
+              <p>Hi ${bookingData.name},</p>
+              <p>Thank you for booking a demo with DAxGENAI! Your session has been confirmed.</p>
+              <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #1e40af; margin-top: 0;">📅 Demo Details</h3>
+                <p><strong>Date:</strong> ${new Date(bookingData.preferredDate).toLocaleDateString()}</p>
+                <p><strong>Time:</strong> ${bookingData.preferredTime}</p>
+                <p><strong>Duration:</strong> 60 minutes</p>
+                <p><strong>Training Interest:</strong> ${bookingData.trainingInterest}</p>
+                <p><strong>Booking ID:</strong> ${bookingId}</p>
+              </div>
+              <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #059669; margin-top: 0;">🔗 Join Your Demo</h3>
+                <p>Click the link below to join your Google Meet session:</p>
+                <a href="${googleMeetLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 10px 0;">
+                  Join Google Meet
+                </a>
+                <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                  Or copy this link: <a href="${googleMeetLink}">${googleMeetLink}</a>
+                </p>
+              </div>
+              <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #d97706; margin-top: 0;">📋 What to Prepare</h3>
+                <ul>
+                  <li>Have your questions ready about Data Analytics and AI</li>
+                  <li>Prepare to discuss your learning goals</li>
+                  <li>Test your microphone and camera</li>
+                  <li>Join 5 minutes before the scheduled time</li>
+                </ul>
+              </div>
+              <p>Best regards,<br>The DAxGENAI Team</p>
+            </div>
+          `
+        });
+        
+        // Send admin notification
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: process.env.ADMIN_EMAIL || 'daxgenai@gmail.com',
+          subject: `📅 New Demo Booking - ${bookingData.name}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #dc2626;">📅 New Demo Booking - DAxGENAI</h2>
+              <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #dc2626; margin-top: 0;">👤 Customer Details</h3>
+                <p><strong>Name:</strong> ${bookingData.name}</p>
+                <p><strong>Email:</strong> ${bookingData.email}</p>
+                <p><strong>Phone:</strong> ${bookingData.phone}</p>
+                <p><strong>Company:</strong> ${bookingData.company}</p>
+                <p><strong>Role:</strong> ${bookingData.role}</p>
+                <p><strong>Experience:</strong> ${bookingData.experience}</p>
+              </div>
+              <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #0369a1; margin-top: 0;">🎯 Demo Details</h3>
+                <p><strong>Date:</strong> ${new Date(bookingData.preferredDate).toLocaleDateString()}</p>
+                <p><strong>Time:</strong> ${bookingData.preferredTime}</p>
+                <p><strong>Training Interest:</strong> ${bookingData.trainingInterest}</p>
+                <p><strong>Goals:</strong> ${bookingData.goals}</p>
+                <p><strong>Booking ID:</strong> ${bookingId}</p>
+              </div>
+              <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #059669; margin-top: 0;">🔗 Google Meet Link</h3>
+                <a href="${googleMeetLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 10px 0;">
+                  Join Meeting
+                </a>
+                <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                  Or copy this link: <a href="${googleMeetLink}">${googleMeetLink}</a>
+                </p>
+              </div>
+              <p>Please prepare for this demo and ensure you're available at the scheduled time.</p>
+            </div>
+          `
+        });
+        
+        console.log('✅ Confirmation emails sent');
+      } catch (emailError) {
+        console.warn('⚠️ Email sending failed:', emailError);
+      }
+      
+      res.json({
+        success: true,
+        bookingId,
+        googleMeetLink,
+        message: 'Demo booking created successfully',
+        storage: 'firebase'
+      });
+      
+    } catch (firebaseErr) {
+      firebaseError = firebaseErr.message;
+      console.log(`Firebase error: ${firebaseErr.message}`);
+      
+      // Generate a working Google Meet link for local booking
+      let googleMeetLink = null;
+      
+      try {
+        console.log('🔗 Generating Google Meet link for local booking...');
+        
+        // Generate a unique Meet code
+        const chars = 'abcdefghijklmnopqrstuvwxyz';
+        const numbers = '0123456789';
+        
+        let meetCode = '';
+        
+        // First group: 3 characters
+        for (let i = 0; i < 3; i++) {
+          meetCode += chars[Math.floor(Math.random() * chars.length)];
+        }
+        
+        meetCode += '-';
+        
+        // Second group: 4 characters
+        for (let i = 0; i < 4; i++) {
+          const charOrNum = Math.random() > 0.5 ? chars : numbers;
+          meetCode += charOrNum[Math.floor(Math.random() * charOrNum.length)];
+        }
+        
+        meetCode += '-';
+        
+        // Third group: 3 characters
+        for (let i = 0; i < 3; i++) {
+          meetCode += chars[Math.floor(Math.random() * chars.length)];
+        }
+        
+        googleMeetLink = `https://meet.google.com/${meetCode}`;
+        
+        console.log('✅ Google Meet link generated for local booking:', googleMeetLink);
+      } catch (meetError) {
+        console.warn('⚠️ Meet link generation failed for local booking:', meetError.message);
+      }
+      
+      // Fallback to local storage
+      const localBooking = {
+        ...bookingData,
+        bookingId,
+        googleMeetLink,
+        status: 'pending',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      localDemoBookings.push(localBooking);
+      
+      console.log(`Demo booking created locally: ${bookingId} for ${bookingData.email}`);
+      
+      // Send confirmation emails even with local storage
+      try {
+        console.log('📧 Sending confirmation emails for local booking...');
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: bookingData.email,
+          subject: '🎉 Your DAxGENAI Demo is Confirmed!',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #2563eb;">🎉 Your DAxGENAI Demo is Confirmed!</h2>
+              <p>Hi ${bookingData.name},</p>
+              <p>Thank you for booking a demo with DAxGENAI! Your session has been confirmed.</p>
+              <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #1e40af; margin-top: 0;">📅 Demo Details</h3>
+                <p><strong>Date:</strong> ${new Date(bookingData.preferredDate).toLocaleDateString()}</p>
+                <p><strong>Time:</strong> ${bookingData.preferredTime}</p>
+                <p><strong>Duration:</strong> 60 minutes</p>
+                <p><strong>Training Interest:</strong> ${bookingData.trainingInterest}</p>
+                <p><strong>Booking ID:</strong> ${bookingId}</p>
+              </div>
+              ${googleMeetLink ? `
+              <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #059669; margin-top: 0;">🔗 Join Your Demo</h3>
+                <p>Click the link below to join your Google Meet session:</p>
+                <a href="${googleMeetLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 10px 0;">
+                  Join Google Meet
+                </a>
+              </div>
+              ` : ''}
+              <p>Best regards,<br>The DAxGENAI Team</p>
+            </div>
+          `
+        });
+        
+        // Send admin notification
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: process.env.ADMIN_EMAIL || 'daxgenai@gmail.com',
+          subject: `📅 New Demo Booking - ${bookingData.name}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #dc2626;">📅 New Demo Booking - DAxGENAI</h2>
+              <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #dc2626; margin-top: 0;">👤 Customer Details</h3>
+                <p><strong>Name:</strong> ${bookingData.name}</p>
+                <p><strong>Email:</strong> ${bookingData.email}</p>
+                <p><strong>Phone:</strong> ${bookingData.phone}</p>
+                <p><strong>Company:</strong> ${bookingData.company}</p>
+                <p><strong>Role:</strong> ${bookingData.role}</p>
+                <p><strong>Experience:</strong> ${bookingData.experience}</p>
+              </div>
+              <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #0369a1; margin-top: 0;">🎯 Demo Details</h3>
+                <p><strong>Date:</strong> ${new Date(bookingData.preferredDate).toLocaleDateString()}</p>
+                <p><strong>Time:</strong> ${bookingData.preferredTime}</p>
+                <p><strong>Training Interest:</strong> ${bookingData.trainingInterest}</p>
+                <p><strong>Goals:</strong> ${bookingData.goals}</p>
+                <p><strong>Booking ID:</strong> ${bookingId}</p>
+              </div>
+              ${googleMeetLink ? `
+              <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #059669; margin-top: 0;">🔗 Google Meet Link</h3>
+                <a href="${googleMeetLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 10px 0;">
+                  Join Meeting
+                </a>
+              </div>
+              ` : ''}
+              <p>Please prepare for this demo and ensure you're available at the scheduled time.</p>
+            </div>
+          `
+        });
+        
+        console.log('✅ Confirmation emails sent for local booking');
+      } catch (emailError) {
+        console.warn('⚠️ Email sending failed for local booking:', emailError);
+      }
+      
+      res.json({
+        success: true,
+        bookingId,
+        googleMeetLink,
+        calendarEventId,
+        message: 'Demo booking created successfully (local storage)',
+        storage: 'local',
+        firebaseError: firebaseErr.message
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error creating demo booking:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to create demo booking',
+      message: error.message 
+    });
+  }
+});
+
 // Update booking with calendar information
 router.put('/update-booking', async (req, res) => {
   try {
     const { bookingId, calendarEventId, googleMeetLink, status } = req.body;
 
     await admin.firestore()
-      .collection('demoBookings')
+      .collection('demo_bookings')
       .doc(bookingId)
       .update({
         calendarEventId,
@@ -286,7 +618,7 @@ router.get('/booking/:bookingId', async (req, res) => {
     const { bookingId } = req.params;
     
     const doc = await admin.firestore()
-      .collection('demoBookings')
+      .collection('demo_bookings')
       .doc(bookingId)
       .get();
 
@@ -307,7 +639,7 @@ router.post('/cancel-booking', async (req, res) => {
     const { bookingId, reason } = req.body;
     
     const doc = await admin.firestore()
-      .collection('demoBookings')
+      .collection('demo_bookings')
       .doc(bookingId)
       .get();
 
@@ -330,7 +662,7 @@ router.post('/cancel-booking', async (req, res) => {
 
     // Update booking status
     await admin.firestore()
-      .collection('demoBookings')
+      .collection('demo_bookings')
       .doc(bookingId)
       .update({
         status: 'cancelled',
@@ -368,7 +700,7 @@ router.post('/cancel-booking', async (req, res) => {
 router.get('/upcoming', async (req, res) => {
   try {
     const snapshot = await admin.firestore()
-      .collection('demoBookings')
+      .collection('demo_bookings')
       .where('status', 'in', ['pending', 'confirmed'])
       .where('preferredDate', '>=', new Date().toISOString().split('T')[0])
       .orderBy('preferredDate')

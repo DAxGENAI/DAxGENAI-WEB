@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Video, X, CheckCircle, Calendar, Clock, Mail, Phone, User, Building, Target, GraduationCap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { demoBookingService, DemoBookingData } from '../services/demoBookingService';
@@ -28,6 +28,26 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     trainingInterest: '',
     status: 'pending'
   });
+
+  // Debug: Log API URL on component mount
+  useEffect(() => {
+    console.log('🔧 DemoBooking component mounted');
+    console.log('🌐 VITE_API_URL:', import.meta.env.VITE_API_URL);
+    console.log('🌐 Default API URL:', 'http://localhost:5001');
+    console.log('🌐 Final API URL:', import.meta.env.VITE_API_URL || 'http://localhost:5001');
+    
+    // Auto-test backend connection when component mounts
+    demoBookingService.testBackendConnection().then(isConnected => {
+      console.log('🔗 Initial backend connection test:', isConnected);
+    });
+  }, []);
+
+  // Test backend connection manually
+  const testBackend = async () => {
+    console.log('🧪 Manual backend test...');
+    const isConnected = await demoBookingService.testBackendConnection();
+    alert(isConnected ? '✅ Backend connection successful!' : '❌ Backend connection failed!');
+  };
 
   const trainingOptions = [
     "Introduction to Data Analysis with Generative AI",
@@ -110,6 +130,15 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
     setIsSubmitting(true);
     try {
+      // Test backend connection first
+      console.log('🧪 Testing backend connection before booking...');
+      const isConnected = await demoBookingService.testBackendConnection();
+      console.log('🔗 Backend connection test result:', isConnected);
+      
+      if (!isConnected) {
+        throw new Error('Cannot connect to backend server. Please check your internet connection.');
+      }
+
       // Validate form data
       const validation = demoBookingService.validateBookingData(formData);
       if (!validation.isValid) {
@@ -120,8 +149,12 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
       // Track the booking
       trackDemoBooking('demo_booking_form');
 
+      console.log('Submitting demo booking with data:', formData);
+
       // Create demo booking with Google Calendar integration
       const result = await demoBookingService.createDemoBooking(formData);
+      
+      console.log('Demo booking created successfully:', result);
       
       setBookingId(result.bookingId);
 
@@ -147,7 +180,12 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
       }, 5000); // Show success message longer since it's more important
     } catch (error) {
       console.error('Error submitting demo booking:', error);
-      alert('Failed to book demo. Please try again or contact us directly.');
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+        formData: formData
+      });
+      alert(`Failed to book demo: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease try again or contact us directly.`);
     } finally {
       setIsSubmitting(false);
     }
@@ -196,9 +234,18 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                 <p className="text-blue-100">30-minute personalized session</p>
               </div>
             </div>
-            <button onClick={onClose} className="text-white hover:text-blue-100 transition-colors">
-              <X className="h-6 w-6" />
-            </button>
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={testBackend} 
+                className="text-white hover:text-blue-100 transition-colors text-sm bg-blue-700 px-3 py-1 rounded"
+                title="Test backend connection"
+              >
+                Test API
+              </button>
+              <button onClick={onClose} className="text-white hover:text-blue-100 transition-colors">
+                <X className="h-6 w-6" />
+              </button>
+            </div>
           </div>
           
           {/* Progress Bar */}
@@ -245,7 +292,7 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                         placeholder="Enter your full name"
                         required
                       />
@@ -260,7 +307,7 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                         placeholder="Enter your email"
                         required
                       />
@@ -275,7 +322,7 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                         placeholder="Enter your phone number"
                         required
                       />
@@ -290,7 +337,7 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                         name="company"
                         value={formData.company}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                         placeholder="e.g., Data Analyst, Student, Business Owner"
                       />
                     </div>
@@ -315,7 +362,7 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                         name="role"
                         value={formData.role}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                         placeholder="e.g., Data Analyst, Student, Business Owner"
                         required
                       />
@@ -329,7 +376,14 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                         name="experience"
                         value={formData.experience}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 appearance-none cursor-pointer"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                          backgroundPosition: 'right 0.5rem center',
+                          backgroundRepeat: 'no-repeat',
+                          backgroundSize: '1.5em 1.5em',
+                          paddingRight: '2.5rem'
+                        }}
                         required
                       >
                         <option value="">Select your experience level</option>
@@ -347,7 +401,14 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                         name="trainingInterest"
                         value={formData.trainingInterest}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 appearance-none cursor-pointer"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                          backgroundPosition: 'right 0.5rem center',
+                          backgroundRepeat: 'no-repeat',
+                          backgroundSize: '1.5em 1.5em',
+                          paddingRight: '2.5rem'
+                        }}
                         required
                       >
                         <option value="">Select your training interest</option>
@@ -366,7 +427,7 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                         value={formData.goals}
                         onChange={handleInputChange}
                         rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                         placeholder="Tell us about your career goals and what you hope to achieve..."
                         required
                       />
@@ -395,11 +456,15 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                             className={`w-full p-3 text-left rounded-lg border transition-colors ${
                               selectedDate && selectedDate.toDateString() === date.toDateString()
                                 ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                : 'border-gray-300 hover:border-blue-300 hover:bg-gray-50'
+                                : 'border-gray-300 hover:border-blue-300 hover:bg-gray-50 text-gray-900'
                             }`}
                           >
                             <div className="font-medium">{formatDate(date)}</div>
-                            <div className="text-sm text-gray-500">
+                            <div className={`text-sm ${
+                              selectedDate && selectedDate.toDateString() === date.toDateString()
+                                ? 'text-blue-600'
+                                : 'text-gray-500'
+                            }`}>
                               {date.toLocaleDateString('en-US', { weekday: 'long' })}
                             </div>
                           </button>
@@ -419,7 +484,7 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                             className={`p-3 text-center rounded-lg border transition-colors ${
                               selectedTime === slot.time
                                 ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                : 'border-gray-300 hover:border-blue-300 hover:bg-gray-50'
+                                : 'border-gray-300 hover:border-blue-300 hover:bg-gray-50 text-gray-900'
                             }`}
                           >
                             {slot.label}
@@ -437,7 +502,14 @@ const DemoBooking = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                       name="timezone"
                       value={formData.timezone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 appearance-none cursor-pointer"
+                      style={{
+                        backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                        backgroundPosition: 'right 0.5rem center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: '1.5em 1.5em',
+                        paddingRight: '2.5rem'
+                      }}
                     >
                       <option value="Asia/Kolkata">India (IST)</option>
                       <option value="America/New_York">Eastern Time (ET)</option>

@@ -1,200 +1,300 @@
-# DAxGENAI - Data Analytics & AI Training Platform
+# 🚀 DAxGENAI - Professional Data Analysis Training Platform
 
-A modern, responsive web application for personalized Data Analytics and Generative AI training programs with full authentication, course management, and payment processing.
+A modern, interactive training platform designed to transform careers through personalized Data Analysis and AI education. Built with cutting-edge technologies and featuring a beautiful dark theme inspired by industry leaders.
 
-## 🚀 Features
+![DAxGENAI Platform](AppLogo.png)
 
-### Core Features
-- **🔐 Complete Authentication System**: Email/password and Google sign-in
-- **📚 Course Management**: Full CRUD operations for courses and lessons
-- **💳 Payment Processing**: Stripe integration for course purchases
-- **📊 Progress Tracking**: Real-time progress monitoring
-- **🤖 AI-Powered Tutor**: Multi-provider AI support (Gemini, OpenAI)
-- **📱 PWA Support**: Progressive Web App capabilities
-- **📈 Analytics Integration**: Google Analytics 4 tracking
+## ✨ Features
 
-### Advanced Features
-- **🎨 3D Interactive Elements**: Three.js powered course cards and logo
-- **🎯 Real-time Collaboration**: Live chat and code editor
-- **📊 Data Visualization**: Interactive charts and analytics
-- **🎭 Smooth Animations**: Framer Motion powered UI
-- **🔍 Advanced Search**: Course and content search functionality
-- **📱 Responsive Design**: Mobile-first approach
-- **⚡ Performance Optimized**: Lazy loading and code splitting
+### 🎯 **Core Training Features**
+- **Personalized One-on-One Training** with Senior Data Analyst
+- **8 Comprehensive Course Modules** from beginner to advanced
+- **Interactive Learning Experience** with real-time feedback
+- **Career Support & Mentorship** including resume review and mock interviews
+- **Flexible Scheduling** across different time zones
 
-## 🛠️ Installation
+### 🎨 **Modern UI/UX**
+- **Dark Theme Design** inspired by Deepgram's professional aesthetic
+- **Smooth Animations** using Framer Motion
+- **Responsive Design** optimized for all devices
+- **Interactive Components** with hover effects and transitions
+- **Professional Typography** and color schemes
 
-### Prerequisites
-- Node.js 18+ 
+### 🔧 **Technical Excellence**
+- **React 18** with TypeScript for type safety
+- **Vite** for lightning-fast development and builds
+- **Tailwind CSS** for utility-first styling
+- **Framer Motion** for smooth animations
+- **Firebase Integration** for authentication and data management
+- **Demo Booking System** with Google Calendar integration
+
+### 📊 **Course Modules**
+1. **Introduction to Data Analysis with Generative AI**
+2. **Advanced Excel for Data Analysis**
+3. **SQL & Database Management**
+4. **Microsoft Power BI**
+5. **Python Programming for Data Science**
+6. **Statistics for Data Analysis**
+7. **Machine Learning Fundamentals**
+8. **Generative AI & Its Tools**
+
+## 🛠️ Tech Stack
+
+### **Frontend**
+- **React 18** - Modern UI library
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+- **Framer Motion** - Animation library
+- **Lucide React** - Beautiful icons
+
+### **Backend & Services**
+- **Node.js** - Server runtime
+- **Express.js** - Web framework
+- **Firebase** - Authentication & Firestore
+- **Google Calendar API** - Demo scheduling
+- **Nodemailer** - Email notifications
+
+### **Development Tools**
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+- **Vitest** - Unit testing
+- **Testing Library** - Component testing
+
+## 🚀 Quick Start
+
+### **Prerequisites**
+- Node.js (v18 or higher)
 - npm or yarn
-- Firebase project
-- Stripe account
-- Google Analytics account
+- Git
 
-### Quick Start
-1. Clone the repository
+### **Installation**
+
+1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/DAxGENAI.git
-   cd DAxGENAI
+   git clone https://github.com/yourusername/daxgenai.git
+   cd daxgenai
    ```
 
-2. Install dependencies
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. Set up environment variables
+3. **Set up environment variables**
    ```bash
-   cp ENVIRONMENT_SETUP.md .env
-   # Edit .env with your API keys
+   cp .env.example .env
+   # Edit .env with your configuration
    ```
 
-4. Start development server
+4. **Start the development server**
    ```bash
    npm run dev
    ```
 
-5. Open http://localhost:3000
+5. **Open your browser**
+   Navigate to `http://localhost:3000`
 
-## 🏗️ Tech Stack
+### **Backend Setup**
 
-### Frontend
-- **React 18** + **TypeScript** - Modern UI framework
-- **Vite** - Fast build tool and dev server
-- **Tailwind CSS** - Utility-first CSS framework
-- **Framer Motion** - Animation library
-- **Three.js** - 3D graphics
-- **Zustand** - State management
+1. **Navigate to server directory**
+   ```bash
+   cd server
+   npm install
+   ```
 
-### Backend & Services
-- **Firebase** - Authentication, Firestore, Storage
-- **Stripe** - Payment processing
-- **Google Analytics 4** - Analytics tracking
-- **Google Generative AI** - AI tutor
-- **OpenAI** - Alternative AI provider
+2. **Configure environment variables**
+   ```bash
+   cp .env.example .env
+   # Add your Firebase, Gmail, and Google Calendar credentials
+   ```
 
-### Development Tools
-- **ESLint** - Code linting
-- **Vitest** - Unit testing
-- **Testing Library** - Component testing
-- **PWA** - Progressive Web App
+3. **Start the backend server**
+   ```bash
+   npm start
+   ```
 
 ## 📁 Project Structure
 
 ```
 DAxGENAI/
 ├── src/
-│   ├── components/
+│   ├── components/          # React components
 │   │   ├── auth/           # Authentication components
-│   │   ├── courses/        # Course-related components
-│   │   └── ...            # Other UI components
-│   ├── services/
-│   │   ├── authService.ts  # Authentication logic
-│   │   ├── courseService.ts # Course management
-│   │   └── paymentService.ts # Payment processing
-│   ├── store/
-│   │   └── useAppStore.ts  # Global state management
-│   ├── firebase/
-│   │   └── config.ts       # Firebase configuration
-│   └── tests/              # Test files
+│   │   └── ...
+│   ├── services/           # API services
+│   ├── store/              # State management
+│   ├── hooks/              # Custom React hooks
+│   ├── pages/              # Page components
+│   └── firebase/           # Firebase configuration
 ├── server/                 # Backend API
-├── public/                 # Static assets
-└── docs/                   # Documentation
+│   ├── api/               # API routes
+│   └── credentials/       # Service account keys
+├── public/                # Static assets
+└── docs/                  # Documentation
 ```
+
+## 🎨 Design System
+
+### **Color Palette**
+- **Primary**: Sky Blue (#0ea5e9)
+- **Secondary**: Purple (#8b5cf6)
+- **Background**: Dark Slate (#0f172a)
+- **Surface**: Slate (#1e293b)
+- **Text**: Light Slate (#f8fafc)
+
+### **Typography**
+- **Headings**: Inter (Bold)
+- **Body**: Inter (Regular)
+- **Code**: Monaco (Monospace)
 
 ## 🔧 Configuration
 
-### Environment Variables
-See `ENVIRONMENT_SETUP.md` for detailed setup instructions.
+### **Environment Variables**
 
-### Firebase Setup
-1. Create a Firebase project
-2. Enable Authentication (Email/Password, Google)
-3. Create Firestore database
-4. Set up security rules
-5. Configure storage
+Create a `.env` file in the root directory:
 
-### Stripe Setup
-1. Create Stripe account
-2. Get API keys
-3. Create products and prices
-4. Set up webhooks
+```env
+# Frontend
+VITE_API_URL=http://localhost:5001
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+# AI APIs
+VITE_GEMINI_API_KEY=your_gemini_api_key
+VITE_OPENAI_API_KEY=your_openai_api_key
+
+# Analytics
+VITE_GA_MEASUREMENT_ID=your_ga_id
+```
+
+### **Backend Environment Variables**
+
+Create a `.env` file in the `server/` directory:
+
+```env
+# Server Configuration
+PORT=5001
+NODE_ENV=development
+
+# Firebase Admin
+FIREBASE_PROJECT_ID=your_project_id
+GOOGLE_APPLICATION_CREDENTIALS=./credentials/service-account-key.json
+
+# Gmail Configuration
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
+
+# Admin Email
+ADMIN_EMAIL=your_email@gmail.com
+
+# Google Calendar
+GOOGLE_CALENDAR_ID=primary
+```
 
 ## 🧪 Testing
 
-Run the test suite:
 ```bash
-# Run all tests
+# Run unit tests
 npm test
 
-# Run tests with UI
-npm run test:ui
+# Run tests in watch mode
+npm run test:watch
 
 # Run tests with coverage
 npm run test:coverage
-
-# Watch mode
-npm run test:watch
 ```
 
 ## 📦 Build & Deployment
 
-### Development
+### **Development**
 ```bash
 npm run dev
 ```
 
-### Production Build
+### **Production Build**
 ```bash
 npm run build
+```
+
+### **Preview Production Build**
+```bash
 npm run preview
 ```
 
-### Deployment Options
-- **Vercel**: Connect GitHub repository
-- **Netlify**: Drag and drop build folder
-- **Firebase Hosting**: `firebase deploy`
-- **AWS S3 + CloudFront**: Upload build files
+## 🌟 Key Features in Detail
 
-## 🔐 Security
+### **Interactive Hero Section**
+- Dynamic testimonials with auto-rotation
+- Floating achievement badges
+- Smooth scroll animations
+- Video play overlay
 
-- Firebase Authentication with secure rules
-- Stripe webhook verification
-- Environment variable protection
-- CORS configuration
-- Input validation and sanitization
+### **Enhanced Course Catalog**
+- Beautiful 3D course cards
+- Staggered animations on scroll
+- Responsive grid layout
+- Interactive hover effects
 
-## 📊 Performance
+### **Smart Testimonials Carousel**
+- Auto-playing with manual controls
+- Progress indicators
+- Smooth transitions
+- Mobile-responsive design
 
-- Code splitting and lazy loading
-- Image optimization
-- PWA caching strategies
-- Bundle size optimization
-- Lighthouse score optimization
+### **Interactive FAQ System**
+- Search functionality
+- Category filtering
+- Smooth accordion animations
+- No results handling
+
+### **Professional Contact Form**
+- Dark theme styling
+- Form validation
+- Success/error handling
+- Demo booking integration
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
-- Check the documentation in `docs/`
-- Review `ENVIRONMENT_SETUP.md` for configuration help
-- Open an issue for bugs or feature requests
+- **Email**: support@daxgenai.com
+- **Phone**: +1 (555) 123-4567
+- **Documentation**: [Project Documentation](PROJECT_DOCUMENTATION.md)
+- **Setup Guide**: [Setup Guide](SETUP_GUIDE.md)
 
 ## 🎯 Roadmap
 
-- [ ] Advanced course analytics
-- [ ] Multi-language support
-- [ ] Mobile app development
-- [ ] Advanced AI features
-- [ ] Enterprise features
-- [ ] API documentation 
+- [ ] **Advanced Analytics Dashboard**
+- [ ] **Mobile App Development**
+- [ ] **AI-Powered Learning Paths**
+- [ ] **Corporate Training Modules**
+- [ ] **Multi-language Support**
+- [ ] **Advanced Assessment System**
+
+## 🙏 Acknowledgments
+
+- **Design Inspiration**: Deepgram's professional aesthetic
+- **Icons**: Lucide React for beautiful icons
+- **Animations**: Framer Motion for smooth interactions
+- **Styling**: Tailwind CSS for utility-first design
+
+---
+
+**Built with ❤️ for transforming careers through data analysis education**
+
+*DAxGENAI - Where Data Dreams Become Reality* 

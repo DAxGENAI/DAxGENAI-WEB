@@ -76,7 +76,8 @@ router.get('/test-config', (req, res) => {
     },
     security: {
       jwtSecret: process.env.JWT_SECRET ? 'Configured' : 'Not configured',
-      sessionSecret: process.env.SESSION_SECRET ? 'Configured' : 'Not configured'
+      sessionSecret: process.env.SESSION_SECRET ? 'Configured' : 'Not configured',
+      rateLimit: process.env.RATE_LIMIT_MAX_REQUESTS ? 'Configured' : 'Not configured'
     },
     timestamp: new Date().toISOString()
   };

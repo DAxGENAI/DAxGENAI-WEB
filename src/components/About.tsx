@@ -5,20 +5,23 @@ const About = () => {
   const achievements = [
     "Senior Data Analyst at NeuNex AI & Analytics",
     "5+ years of industry experience",
-    "Trained over 2000 successful students",
+    "Trained over 2000 students through 1-on-1 sessions",
     "Expert in AI and Machine Learning technologies",
-    "Specialized in practical, hands-on training methods",
-    "Industry-recognized certifications and expertise"
+    "Specialized in personalized, adaptive training methods",
+    "98% success rate with individualized learning plans",
+    "Flexible scheduling to fit your lifestyle",
+    "Real-time feedback and immediate problem-solving"
   ];
 
   return (
     <section id="about" className="section">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">About Your Trainer</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Why Choose 1-on-1 Training?</h2>
           <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto">
-            Learn from an experienced professional who has helped thousands of students 
-            successfully transition into data analysis and AI careers.
+            Experience the difference of personalized learning with a dedicated trainer who adapts to your pace, 
+            learning style, and career goals. No group classes, no pre-recorded videos - just focused, 
+            individualized attention.
           </p>
         </div>
 
@@ -50,8 +53,8 @@ const About = () => {
                   <Target className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-200">Specialized Training</h3>
-                  <p className="text-sm sm:text-base text-slate-400">Personalized one-on-one coaching approach</p>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-200">1-on-1 Training Approach</h3>
+                  <p className="text-sm sm:text-base text-slate-400">Personalized coaching tailored to your learning style and career goals</p>
                 </div>
               </div>
             </div>
@@ -65,6 +68,52 @@ const About = () => {
                     <span className="text-sm sm:text-base text-slate-300">{achievement}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* 1-on-1 Training Benefits */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-bold text-slate-200">Why 1-on-1 Training Works</h4>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">1</span>
+                    </div>
+                    <h5 className="font-semibold text-slate-200">Personalized Pace</h5>
+                  </div>
+                  <p className="text-sm text-slate-400">Learn at your own speed with no pressure to keep up with others</p>
+                </div>
+                
+                <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">2</span>
+                    </div>
+                    <h5 className="font-semibold text-slate-200">Immediate Feedback</h5>
+                  </div>
+                  <p className="text-sm text-slate-400">Get instant answers and corrections during your sessions</p>
+                </div>
+                
+                <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">3</span>
+                    </div>
+                    <h5 className="font-semibold text-slate-200">Custom Curriculum</h5>
+                  </div>
+                  <p className="text-sm text-slate-400">Training tailored to your specific career goals and background</p>
+                </div>
+                
+                <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">4</span>
+                    </div>
+                    <h5 className="font-semibold text-slate-200">Flexible Scheduling</h5>
+                  </div>
+                  <p className="text-sm text-slate-400">Sessions that fit your schedule, not the other way around</p>
+                </div>
               </div>
             </div>
           </div>

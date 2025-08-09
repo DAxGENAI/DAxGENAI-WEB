@@ -241,7 +241,14 @@ const Contact = () => {
                       name="trainingInterest"
                       value={formData.trainingInterest}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-slate-600 bg-slate-800 text-slate-200 rounded-lg focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-colors duration-200"
+                      className="w-full px-4 py-3 border border-slate-600 bg-slate-800 text-slate-200 rounded-lg focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-colors duration-200 appearance-none cursor-pointer"
+                      style={{
+                        backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                        backgroundPosition: 'right 0.5rem center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: '1.5em 1.5em',
+                        paddingRight: '2.5rem'
+                      }}
                     >
                       <option value="">Select a course</option>
                       {trainingOptions.map((option, index) => (

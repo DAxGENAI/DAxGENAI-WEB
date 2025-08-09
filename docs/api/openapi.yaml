@@ -1,0 +1,632 @@
+openapi: 3.0.3
+info:
+  title: DAxGENAI Demo Booking API
+  description: |
+    REST API for DAxGENAI's demo booking system, email services, and analytics tracking.
+    
+    ## Features
+    - Demo booking creation and management
+    - Email confirmation services
+    - Google Calendar integration
+    - Analytics event tracking
+    - Health monitoring and testing endpoints
+    
+    ## Rate Limiting
+    - 100 requests per 15 minutes per IP address
+    - Rate limit headers included in responses
+    
+    ## CORS
+    - Configured for production domains
+    - Development localhost support included
+  version: 1.0.0
+  contact:
+    name: DAxGENAI API Support
+    email: api-support@daxgenai.com
+    url: https://daxgenai.com/support
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.daxgenai.com
+    description: Production server
+  - url: http://localhost:5001
+    description: Development server
+
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Returns the current health status of the API server
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/test-config:
+    get:
+      summary: Configuration Test
+      description: Tests and returns the current configuration status
+      operationId: testConfig
+      tags:
+        - Testing
+      responses:
+        '200':
+          description: Configuration status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigTestResponse'
+
+  /api/demo/create-booking:
+    post:
+      summary: Create Demo Booking
+      description: Creates a new demo booking request with Google Calendar integration
+      operationId: createDemoBooking
+      tags:
+        - Demo Booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemoBookingRequest'
+      responses:
+        '201':
+          description: Booking created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoBookingResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/send-demo-email:
+    post:
+      summary: Send Demo Confirmation Email
+      description: Sends a confirmation email for a demo booking
+      operationId: sendDemoEmail
+      tags:
+        - Email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Email sending failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/analytics:
+    post:
+      summary: Track Analytics Event
+      description: Records an analytics event for tracking user behavior
+      operationId: trackAnalyticsEvent
+      tags:
+        - Analytics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyticsRequest'
+      responses:
+        '200':
+          description: Event tracked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsResponse'
+        '400':
+          description: Invalid event data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/test-email:
+    post:
+      summary: Test Email Service
+      description: Sends a test email to verify email service functionality
+      operationId: testEmail
+      tags:
+        - Testing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestEmailRequest'
+      responses:
+        '200':
+          description: Test email sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestEmailResponse'
+        '400':
+          description: Invalid email address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/test-calendar:
+    post:
+      summary: Test Calendar Integration
+      description: Tests Google Calendar API connectivity
+      operationId: testCalendar
+      tags:
+        - Testing
+      responses:
+        '200':
+          description: Calendar test successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarTestResponse'
+        '500':
+          description: Calendar service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/create-meet-link:
+    post:
+      summary: Create Google Meet Link
+      description: Generates a Google Meet link for a demo session
+      operationId: createMeetLink
+      tags:
+        - Calendar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetLinkRequest'
+      responses:
+        '201':
+          description: Meet link created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetLinkResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000Z"
+        service:
+          type: string
+          example: "DAxGENAI Demo Booking API"
+      required:
+        - status
+        - timestamp
+        - service
+
+    ConfigTestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        configuration:
+          type: object
+          properties:
+            emailService:
+              type: string
+              example: "configured"
+            calendarService:
+              type: string
+              example: "configured"
+            databaseService:
+              type: string
+              example: "configured"
+            securityFeatures:
+              type: string
+              example: "enabled"
+        environment:
+          type: string
+          example: "production"
+
+    DemoBookingRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+          minLength: 2
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "+1234567890"
+          pattern: '^[+]?[1-9]\d{1,14}$'
+        company:
+          type: string
+          example: "Tech Corp"
+          maxLength: 100
+        role:
+          type: string
+          example: "Data Analyst"
+          maxLength: 100
+        experience:
+          type: string
+          enum: ["Beginner", "Intermediate", "Advanced"]
+          example: "Beginner"
+        goals:
+          type: string
+          example: "Learn data analysis fundamentals"
+          maxLength: 500
+        preferredTime:
+          type: string
+          pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'
+          example: "10:00"
+        preferredDate:
+          type: string
+          format: date
+          example: "2024-01-20"
+        timezone:
+          type: string
+          example: "Asia/Kolkata"
+        trainingInterest:
+          type: string
+          example: "Python for Data Science"
+          maxLength: 200
+        source:
+          type: string
+          example: "website"
+        utmSource:
+          type: string
+          example: "google"
+        utmMedium:
+          type: string
+          example: "cpc"
+        utmCampaign:
+          type: string
+          example: "winter2024"
+      required:
+        - name
+        - email
+        - phone
+        - preferredDate
+        - preferredTime
+        - trainingInterest
+
+    DemoBookingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        bookingId:
+          type: string
+          example: "booking_abc123"
+        message:
+          type: string
+          example: "Demo booking created successfully"
+        data:
+          type: object
+          properties:
+            bookingId:
+              type: string
+              example: "booking_abc123"
+            googleMeetLink:
+              type: string
+              format: url
+              example: "https://meet.google.com/demo-booking_abc123-20240120"
+            status:
+              type: string
+              enum: ["pending", "confirmed", "cancelled", "completed"]
+              example: "pending"
+            createdAt:
+              type: string
+              format: date-time
+              example: "2024-01-15T10:30:00.000Z"
+
+    EmailRequest:
+      type: object
+      properties:
+        bookingData:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "John Doe"
+            email:
+              type: string
+              format: email
+              example: "john@example.com"
+            preferredDate:
+              type: string
+              format: date
+              example: "2024-01-20"
+            preferredTime:
+              type: string
+              example: "10:00"
+        bookingId:
+          type: string
+          example: "booking_abc123"
+      required:
+        - bookingData
+        - bookingId
+
+    EmailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Confirmation email sent successfully"
+        emailId:
+          type: string
+          example: "email_def456"
+
+    AnalyticsRequest:
+      type: object
+      properties:
+        eventName:
+          type: string
+          example: "demo_booking_started"
+        properties:
+          type: object
+          additionalProperties: true
+          example:
+            source: "website"
+            page: "/courses"
+        sessionId:
+          type: string
+          example: "session_xyz789"
+        userId:
+          type: string
+          example: "user_123"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000Z"
+      required:
+        - eventName
+
+    AnalyticsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Event tracked successfully"
+
+    TestEmailRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: "test@example.com"
+      required:
+        - email
+
+    TestEmailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Test email sent successfully"
+
+    CalendarTestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Calendar service is working correctly"
+        calendarId:
+          type: string
+          example: "primary"
+
+    MeetLinkRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "DAxGENAI Demo Session"
+        startTime:
+          type: string
+          format: date-time
+          example: "2024-01-20T10:00:00.000Z"
+        duration:
+          type: integer
+          example: 60
+          description: "Duration in minutes"
+        attendeeEmail:
+          type: string
+          format: email
+          example: "john@example.com"
+      required:
+        - title
+        - startTime
+        - attendeeEmail
+
+    MeetLinkResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        meetLink:
+          type: string
+          format: url
+          example: "https://meet.google.com/abc-defg-hij"
+        eventId:
+          type: string
+          example: "event_123456"
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Internal server error"
+        message:
+          type: string
+          example: "Something went wrong. Please try again later."
+        requestId:
+          type: string
+          example: "req_abc123"
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Validation failed"
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "email"
+              message:
+                type: string
+                example: "Email is required"
+
+    RateLimitErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Too many requests"
+        message:
+          type: string
+          example: "Rate limit exceeded. Try again in 15 minutes."
+        retryAfter:
+          type: integer
+          example: 900
+          description: "Seconds until rate limit resets"
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token for API authentication (future feature).
+        Include the token in the Authorization header: `Bearer <token>`
+
+  parameters:
+    RateLimitHeaders:
+      name: X-RateLimit-*
+      in: header
+      description: Rate limiting information
+      schema:
+        type: object
+        properties:
+          X-RateLimit-Limit:
+            type: integer
+            example: 100
+          X-RateLimit-Remaining:
+            type: integer
+            example: 99
+          X-RateLimit-Reset:
+            type: integer
+            example: 1642597200
+
+tags:
+  - name: Health
+    description: Health monitoring and status endpoints
+  - name: Demo Booking
+    description: Demo booking creation and management
+  - name: Email
+    description: Email service endpoints
+  - name: Analytics
+    description: Analytics and tracking endpoints
+  - name: Testing
+    description: Testing and debugging endpoints
+  - name: Calendar
+    description: Calendar integration endpoints
+
+externalDocs:
+  description: Full API Documentation
+  url: https://docs.daxgenai.com/api

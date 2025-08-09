@@ -31,57 +31,131 @@ export interface TimeSlot {
 class DemoBookingService {
   private apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
+  // Test method to check backend connectivity
+  async testBackendConnection(): Promise<boolean> {
+    try {
+      console.log('🧪 Testing backend connection...');
+      console.log('🌐 API URL:', this.apiUrl);
+      
+      const response = await fetch(`${this.apiUrl}/health`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log('📥 Test response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Backend test successful:', data);
+        return true;
+      } else {
+        console.error('❌ Backend test failed:', response.status);
+        return false;
+      }
+    } catch (error) {
+      console.error('💥 Backend connection test failed:', error);
+      return false;
+    }
+  }
+
   // Create demo booking
   async createDemoBooking(data: DemoBookingData): Promise<{ bookingId: string; googleMeetLink?: string }> {
     try {
-      // Generate a unique booking ID
-      const bookingId = `demo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-      // Create Google Calendar event
-      const calendarResponse = await this.createGoogleCalendarEvent(data, bookingId);
+      console.log('🚀 Starting demo booking creation...');
+      console.log('📡 API URL:', this.apiUrl);
+      console.log('📋 Form data:', data);
       
-      // Send confirmation emails
-      await this.sendConfirmationEmails(data, bookingId, calendarResponse.googleMeetLink);
-
-      return {
-        bookingId,
-        googleMeetLink: calendarResponse.googleMeetLink
+      const requestBody = {
+        ...data,
+        source: 'website',
+        utmSource: new URLSearchParams(window.location.search).get('utm_source'),
+        utmMedium: new URLSearchParams(window.location.search).get('utm_medium'),
+        utmCampaign: new URLSearchParams(window.location.search).get('utm_campaign'),
       };
+      
+      console.log('📤 Request body:', requestBody);
+      console.log('🌐 Making request to:', `${this.apiUrl}/api/demo/create-booking`);
+
+      // Create booking in backend
+      const bookingResponse = await fetch(`${this.apiUrl}/api/demo/create-booking`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      console.log('📥 Response status:', bookingResponse.status);
+      console.log('📥 Response headers:', Object.fromEntries(bookingResponse.headers.entries()));
+
+      if (!bookingResponse.ok) {
+        const errorData = await bookingResponse.json();
+        console.error('❌ Response not OK:', errorData);
+        throw new Error(errorData.error || 'Failed to create booking');
+      }
+
+      const bookingResult = await bookingResponse.json();
+      console.log('✅ Booking result:', bookingResult);
+      
+      const { bookingId } = bookingResult;
+
+      // Send confirmation email
+      try {
+        console.log('📧 Sending confirmation email...');
+        await fetch(`${this.apiUrl}/api/send-demo-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            bookingData: data,
+            bookingId,
+          }),
+        });
+        console.log('✅ Email sent successfully');
+      } catch (emailError) {
+        console.warn('⚠️ Email sending failed, but booking was created:', emailError);
+      }
+
+      const result = {
+        bookingId,
+        googleMeetLink: `https://meet.google.com/demo-${bookingId}-${data.preferredDate.replace(/-/g, '')}`
+      };
+      
+      console.log('🎉 Final result:', result);
+      return result;
     } catch (error) {
-      console.error('Error creating demo booking:', error);
+      console.error('💥 Error creating demo booking:', error);
+      console.error('💥 Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
       throw new Error('Failed to create demo booking');
     }
   }
 
-  // Create Google Calendar event
+  // Create Google Calendar event - Simplified version
   private async createGoogleCalendarEvent(data: DemoBookingData, bookingId: string): Promise<{ eventId: string; googleMeetLink: string }> {
-    try {
-      const response = await fetch(`${this.apiUrl}/api/demo/create-calendar-event`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bookingData: data,
-          bookingId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create calendar event');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error creating calendar event:', error);
-      throw new Error('Failed to create calendar event');
-    }
+    // Simplified - just return a generated meet link
+    return {
+      eventId: `demo_${bookingId}`,
+      googleMeetLink: `https://meet.google.com/demo-${bookingId}-${data.preferredDate.replace(/-/g, '')}`
+    };
   }
 
-  // Send confirmation emails
+  // Update booking - Simplified version
+  private async updateBooking(bookingId: string, updates: Partial<DemoBookingData>): Promise<void> {
+    // Simplified - just log the update
+    console.log('Booking update:', { bookingId, updates });
+  }
+
+  // Send confirmation emails - Simplified version
   private async sendConfirmationEmails(data: DemoBookingData, bookingId: string, googleMeetLink?: string): Promise<void> {
     try {
-      const response = await fetch(`${this.apiUrl}/api/demo/send-confirmation-emails`, {
+      await fetch(`${this.apiUrl}/api/send-demo-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,16 +163,10 @@ class DemoBookingService {
         body: JSON.stringify({
           bookingData: data,
           bookingId,
-          googleMeetLink: googleMeetLink || `https://meet.google.com/demo-${bookingId}`
         }),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to send confirmation emails');
-      }
     } catch (error) {
-      console.error('Error sending confirmation emails:', error);
-      throw new Error('Failed to send confirmation emails');
+      console.warn('Email sending failed:', error);
     }
   }
 

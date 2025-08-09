@@ -59,7 +59,7 @@ const AnimatedBackground = () => {
         // Draw particle
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})`;
+        ctx.fillStyle = `rgba(14, 165, 233, ${particle.opacity})`; // Sky blue color
         ctx.fill();
       });
 
@@ -74,7 +74,7 @@ const AnimatedBackground = () => {
             ctx.beginPath();
             ctx.moveTo(particle1.x, particle1.y);
             ctx.lineTo(particle2.x, particle2.y);
-            ctx.strokeStyle = `rgba(59, 130, 246, ${0.1 * (1 - distance / 100)})`;
+            ctx.strokeStyle = `rgba(14, 165, 233, ${0.1 * (1 - distance / 100)})`; // Sky blue color
             ctx.lineWidth = 1;
             ctx.stroke();
           }
@@ -93,71 +93,37 @@ const AnimatedBackground = () => {
 
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden">
-      {/* Animated gradient background */}
+      {/* Dark gradient background */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
+        className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
         animate={{
           background: [
-            "linear-gradient(45deg, #eff6ff, #e0e7ff, #f3e8ff)",
-            "linear-gradient(45deg, #e0e7ff, #f3e8ff, #eff6ff)",
-            "linear-gradient(45deg, #f3e8ff, #eff6ff, #e0e7ff)",
+            'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+            'linear-gradient(135deg, #0f172a 0%, #0c4a6e 50%, #0f172a 100%)',
+            'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
           ],
         }}
         transition={{
-          duration: 10,
+          duration: 8,
           repeat: Infinity,
-          ease: "linear",
+          ease: 'easeInOut',
         }}
       />
       
-      {/* Floating geometric shapes */}
-      <motion.div
-        className="absolute top-20 left-20 w-32 h-32 bg-blue-200 rounded-full opacity-20"
-        animate={{
-          y: [0, -20, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+      {/* Subtle overlay pattern */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/50 via-transparent to-slate-900/50" />
+      </div>
       
-      <motion.div
-        className="absolute top-40 right-32 w-24 h-24 bg-indigo-200 rounded-full opacity-20"
-        animate={{
-          y: [0, 30, 0],
-          scale: [1, 0.9, 1],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1,
-        }}
-      />
-      
-      <motion.div
-        className="absolute bottom-32 left-1/4 w-20 h-20 bg-purple-200 rounded-full opacity-20"
-        animate={{
-          y: [0, -15, 0],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2,
-        }}
-      />
-
-      {/* Particle canvas */}
+      {/* Canvas for animated particles */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
         style={{ opacity: 0.3 }}
       />
+      
+      {/* Radial gradient overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-radial from-transparent via-slate-900/30 to-slate-900" />
     </div>
   );
 };

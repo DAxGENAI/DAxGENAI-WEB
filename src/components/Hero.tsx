@@ -7,9 +7,9 @@ const Hero = () => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const testimonials = [
-    "Just landed my dream job as a Data Analyst! The personalized training was incredible.",
-    "From complete beginner to confident analyst in just 3 months. Highly recommend!",
-    "The one-on-one approach made all the difference. Worth every penny invested."
+    "The one-on-one sessions were game-changing! My trainer tailored everything to my learning pace and career goals.",
+    "From complete beginner to confident analyst in just 3 months. The personalized approach made all the difference!",
+    "No more struggling with pre-recorded videos. My dedicated trainer was there every step of the way."
   ];
 
   useEffect(() => {
@@ -58,7 +58,10 @@ const Hero = () => {
                   Data Analytics &
                 </motion.span>
                 <motion.span 
-                  className="block text-gradient text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
+                  className="block text-white font-bold drop-shadow-lg"
+                  style={{
+                    textShadow: '0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(14, 165, 233, 0.2)'
+                  }}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
@@ -72,8 +75,11 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
               >
-                Transform your career with personalized one-on-one training from a Senior Data Analyst 
-                with 5 years of experience and over 2000 successful students.
+                Transform your career with <span className="text-sky-400 font-semibold">personalized one-on-one training</span> from a Senior Data Analyst 
+                with 5 years of experience and over 2000 successful students. 
+                <span className="block mt-2 text-base text-slate-400">
+                  No pre-recorded videos. No group classes. Just you and your dedicated trainer.
+                </span>
               </motion.p>
             </motion.div>
 
@@ -94,7 +100,7 @@ const Hero = () => {
                   whileHover={{ x: '100%' }}
                   transition={{ duration: 0.6 }}
                 />
-                <span className="relative z-10">Start Your Journey</span>
+                <span className="relative z-10">Book Your 1-on-1 Session</span>
                 <ArrowRight className="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform" />
               </motion.button>
               <motion.button 
@@ -102,7 +108,7 @@ const Hero = () => {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
-                View Courses
+                Explore Training Programs
               </motion.button>
             </motion.div>
 
@@ -115,13 +121,15 @@ const Hero = () => {
             >
               <div className="flex items-center space-x-3">
                 <div className="flex -space-x-2">
-                  {[1, 2, 3].map((i) => (
+                  {['S', 'R', 'H'].map((letter, i) => (
                     <motion.div
                       key={i}
-                      className="w-8 h-8 rounded-full bg-gradient-to-r from-sky-400 to-purple-500 border-2 border-white"
+                      className="w-8 h-8 rounded-full bg-gradient-to-r from-sky-400 to-purple-500 border-2 border-white flex items-center justify-center"
                       whileHover={{ scale: 1.2, zIndex: 10 }}
                       transition={{ duration: 0.2 }}
-                    />
+                    >
+                      <span className="text-white font-bold text-sm">{letter}</span>
+                    </motion.div>
                   ))}
                 </div>
                 <div className="flex-1">

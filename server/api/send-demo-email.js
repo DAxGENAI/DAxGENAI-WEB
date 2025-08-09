@@ -218,10 +218,8 @@ router.post('/send-demo-email', async (req, res) => {
       });
     }
 
-    // Create Google Meet event
-    const calendarEvent = await createGoogleMeetEvent(bookingData, bookingId);
-    const googleMeetLink = calendarEvent.conferenceData?.entryPoints?.[0]?.uri || 
-                          `https://meet.google.com/demo-${bookingId}-${bookingData.preferredDate.replace(/-/g, '')}`;
+    // Create a simple Google Meet link (without calendar integration for now)
+    const googleMeetLink = `https://meet.google.com/demo-${bookingId}-${bookingData.preferredDate.replace(/-/g, '')}`;
 
     // Send confirmation email
     await sendConfirmationEmail(bookingData, bookingId, googleMeetLink);
@@ -233,14 +231,15 @@ router.post('/send-demo-email', async (req, res) => {
       success: true, 
       message: 'Demo confirmation email sent successfully',
       googleMeetLink,
-      calendarEventId: calendarEvent.id
+      bookingId
     });
 
   } catch (error) {
     console.error('Error in send-demo-email endpoint:', error);
     res.status(500).json({ 
       success: false, 
-      error: 'Failed to send demo confirmation email' 
+      error: 'Failed to send demo confirmation email',
+      details: error.message 
     });
   }
 });
@@ -278,6 +277,48 @@ router.post('/send-reminder-email', async (req, res) => {
   } catch (error) {
     console.error('Error sending reminder email:', error);
     res.status(500).json({ success: false, error: 'Failed to send reminder email' });
+  }
+});
+
+// Test email endpoint
+router.post('/test-email', async (req, res) => {
+  try {
+    const { to, subject, text } = req.body;
+    
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: to || 'syedrhda@gmail.com',
+      subject: subject || 'Test Email from DAxGENAI',
+      text: text || 'This is a test email from the DAxGENAI demo booking system.',
+      html: `
+        <h2>Test Email</h2>
+        <p>This is a test email from the DAxGENAI demo booking system.</p>
+        <p>If you receive this, the email configuration is working correctly.</p>
+        <p>Time: ${new Date().toISOString()}</p>
+      `
+    };
+
+    console.log('Attempting to send test email...');
+    console.log('From:', process.env.EMAIL_USER);
+    console.log('To:', mailOptions.to);
+    
+    const result = await transporter.sendMail(mailOptions);
+    
+    console.log('Test email sent successfully:', result.messageId);
+    
+    res.json({ 
+      success: true, 
+      message: 'Test email sent successfully',
+      messageId: result.messageId
+    });
+
+  } catch (error) {
+    console.error('Error sending test email:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to send test email',
+      details: error.message 
+    });
   }
 });
 

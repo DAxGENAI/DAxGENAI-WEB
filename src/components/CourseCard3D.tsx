@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, Box, Sphere } from '@react-three/drei';
-import { Star, ArrowRight } from 'lucide-react';
+import { Star, ArrowRight, CheckCircle, Clock, Users } from 'lucide-react';
 
 interface CourseCard3DProps {
   title: string;
@@ -13,7 +13,12 @@ interface CourseCard3DProps {
   students: number;
   logo: string;
   logoName: string;
-  index: number;
+  price?: string;
+  tools?: string[];
+  learningOutcomes?: string[];
+  certificate?: boolean;
+  lastUpdated?: string;
+  onClick?: () => void;
 }
 
 const CourseCard3D: React.FC<CourseCard3DProps> = ({
@@ -25,7 +30,12 @@ const CourseCard3D: React.FC<CourseCard3DProps> = ({
   students,
   logo,
   logoName,
-  index
+  price,
+  tools = [],
+  learningOutcomes = [],
+  certificate = false,
+  lastUpdated,
+  onClick
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
@@ -35,11 +45,14 @@ const CourseCard3D: React.FC<CourseCard3DProps> = ({
       className="relative group"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
+      transition={{ duration: 0.6 }}
       whileHover={{ scale: 1.05 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      onClick={() => setIsClicked(!isClicked)}
+      onClick={() => {
+        setIsClicked(!isClicked);
+        onClick?.();
+      }}
     >
       {/* 3D Card Container */}
       <div className="relative h-96 w-full perspective-1000">
@@ -53,9 +66,9 @@ const CourseCard3D: React.FC<CourseCard3DProps> = ({
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
           {/* Front of card */}
-          <div className="absolute inset-0 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+          <div className="absolute inset-0 bg-slate-800 rounded-xl shadow-lg overflow-hidden border border-slate-600">
             {/* 3D Logo Section */}
-            <div className="relative h-36 bg-gradient-to-br from-blue-50 to-indigo-50 overflow-hidden">
+            <div className="relative h-36 bg-gradient-to-br from-slate-700 to-slate-800 overflow-hidden">
               <motion.div
                 className="absolute inset-0 flex items-center justify-center"
                 animate={{
@@ -71,7 +84,7 @@ const CourseCard3D: React.FC<CourseCard3DProps> = ({
               {isHovered && (
                 <>
                   <motion.div
-                    className="absolute top-4 left-4 w-2 h-2 bg-blue-400 rounded-full"
+                    className="absolute top-4 left-4 w-2 h-2 bg-sky-400 rounded-full"
                     animate={{
                       y: [0, -10, 0],
                       opacity: [0, 1, 0],
@@ -98,72 +111,94 @@ const CourseCard3D: React.FC<CourseCard3DProps> = ({
               )}
             </div>
 
-            {/* Content */}
-            <div className="p-5 flex flex-col h-full">
-              <div className="flex items-center justify-between mb-3">
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
-                  {level}
-                </span>
-                <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
-                  {logoName}
-                </span>
+            {/* Content Section */}
+            <div className="p-6">
+              {/* Header */}
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-slate-100 mb-2 line-clamp-2">
+                  {title}
+                </h3>
+                <p className="text-sm text-slate-300 line-clamp-2">
+                  {description}
+                </p>
               </div>
 
-              <h3 className="text-lg font-bold text-gray-900 mb-3 leading-tight">
-                {title}
-              </h3>
-              
-              <p className="text-gray-600 text-sm mb-6 leading-relaxed flex-grow">
-                {description}
-              </p>
-
-              <div className="flex items-center justify-between mt-auto">
-                <div className="flex items-center space-x-1">
-                  <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                  <span className="text-sm font-medium text-gray-700">{rating}</span>
+              {/* Course Info */}
+              <div className="space-y-3 mb-4">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1 text-slate-400">
+                    <Clock className="h-4 w-4" />
+                    <span>{duration}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-slate-400">
+                    <Users className="h-4 w-4" />
+                    <span>{students.toLocaleString()}</span>
+                  </div>
                 </div>
-                <motion.button
-                  className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center space-x-1 group"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span>Learn More</span>
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-                </motion.button>
+                
+                <div className="flex items-center justify-between">
+                  <span className="px-2 py-1 bg-sky-900 text-sky-300 text-xs font-medium rounded-full">
+                    {level}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                    <span className="text-sm font-medium text-slate-100">{rating}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tools and Features */}
+              {tools.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-medium text-slate-400 mb-2">Tools you'll learn:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {tools.map((tool, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded"
+                      >
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Price and Certificate */}
+              <div className="flex items-center justify-between">
+                {price && (
+                  <div className="text-lg font-bold text-sky-400">
+                    {price}
+                  </div>
+                )}
+                {certificate && (
+                  <div className="flex items-center gap-1 text-green-400">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="text-xs font-medium">Certificate</span>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Glow effect on hover */}
-            {isHovered && (
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-xl"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              />
-            )}
+            {/* Hover Overlay */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-t from-sky-600/90 to-transparent opacity-0 flex items-end"
+              animate={{ opacity: isHovered ? 1 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="p-6 text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <ArrowRight className="h-5 w-5" />
+                  <span className="font-semibold">Learn More</span>
+                </div>
+                <p className="text-sm opacity-90">
+                  Click to explore course details and book your demo session
+                </p>
+              </div>
+            </motion.div>
           </div>
-
-          {/* Back of card (3D effect) */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl transform rotate-y-180"
-            style={{ backfaceVisibility: 'hidden' }}
-            animate={{
-              opacity: isHovered ? 0.1 : 0,
-            }}
-          />
         </motion.div>
       </div>
-
-      {/* Shadow */}
-      <motion.div
-        className="absolute -bottom-2 left-2 right-2 h-2 bg-black/10 rounded-xl blur-sm"
-        animate={{
-          scaleX: isHovered ? 1.1 : 1,
-          opacity: isHovered ? 0.3 : 0.1,
-        }}
-        transition={{ duration: 0.3 }}
-      />
     </motion.div>
   );
 };

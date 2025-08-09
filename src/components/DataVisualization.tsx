@@ -1,178 +1,150 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area } from 'recharts';
 
 const DataVisualization = () => {
-  const [activeChart, setActiveChart] = useState('line');
+  const [activeTab, setActiveTab] = useState('bar');
 
-  // Sample data for visualizations
-  const studentProgressData = [
-    { month: 'Jan', students: 120, completion: 85, satisfaction: 92 },
-    { month: 'Feb', students: 150, completion: 88, satisfaction: 94 },
-    { month: 'Mar', students: 180, completion: 90, satisfaction: 96 },
-    { month: 'Apr', students: 220, completion: 92, satisfaction: 95 },
-    { month: 'May', students: 280, completion: 94, satisfaction: 97 },
-    { month: 'Jun', students: 320, completion: 96, satisfaction: 98 },
+  const barData = [
+    { name: 'Python', value: 85, color: '#0ea5e9' },
+    { name: 'SQL', value: 78, color: '#8b5cf6' },
+    { name: 'Excel', value: 92, color: '#10b981' },
+    { name: 'Power BI', value: 73, color: '#f59e0b' },
+    { name: 'R', value: 65, color: '#ef4444' },
   ];
 
-  const coursePopularityData = [
-    { name: 'Python', students: 680, fill: '#3B82F6' },
-    { name: 'SQL', students: 520, fill: '#10B981' },
-    { name: 'Power BI', students: 340, fill: '#F59E0B' },
-    { name: 'Machine Learning', students: 420, fill: '#EF4444' },
-    { name: 'Excel', students: 380, fill: '#8B5CF6' },
-    { name: 'Generative AI', students: 380, fill: '#06B6D4' },
+  const pieData = [
+    { name: 'Data Analysis', value: 35, color: '#0ea5e9' },
+    { name: 'Machine Learning', value: 25, color: '#8b5cf6' },
+    { name: 'Visualization', value: 20, color: '#10b981' },
+    { name: 'Statistics', value: 15, color: '#f59e0b' },
+    { name: 'Others', value: 5, color: '#ef4444' },
   ];
 
-  const skillRadarData = [
-    { skill: 'Python', value: 95, fullMark: 100 },
-    { skill: 'SQL', value: 88, fullMark: 100 },
-    { skill: 'Power BI', value: 92, fullMark: 100 },
-    { skill: 'Statistics', value: 85, fullMark: 100 },
-    { skill: 'Machine Learning', value: 90, fullMark: 100 },
-    { skill: 'Data Visualization', value: 93, fullMark: 100 },
+  const lineData = [
+    { month: 'Jan', students: 120, growth: 15 },
+    { month: 'Feb', students: 150, growth: 25 },
+    { month: 'Mar', students: 180, growth: 20 },
+    { month: 'Apr', students: 220, growth: 22 },
+    { month: 'May', students: 280, growth: 27 },
+    { month: 'Jun', students: 350, growth: 25 },
   ];
 
-  const salaryIncreaseData = [
-    { experience: '0-1 years', before: 45000, after: 65000 },
-    { experience: '1-3 years', before: 55000, after: 75000 },
-    { experience: '3-5 years', before: 65000, after: 85000 },
-    { experience: '5+ years', before: 75000, after: 95000 },
+  const areaData = [
+    { month: 'Jan', completion: 75, satisfaction: 88 },
+    { month: 'Feb', completion: 82, satisfaction: 92 },
+    { month: 'Mar', completion: 78, satisfaction: 85 },
+    { month: 'Apr', completion: 90, satisfaction: 94 },
+    { month: 'May', completion: 88, satisfaction: 91 },
+    { month: 'Jun', completion: 95, satisfaction: 96 },
   ];
 
-  const chartTypes = [
-    { id: 'line', name: 'Student Progress' },
-    { id: 'pie', name: 'Course Popularity' },
-    { id: 'radar', name: 'Skill Assessment' },
-    { id: 'bar', name: 'Salary Impact' },
+  const tabs = [
+    { id: 'bar', label: 'Bar Chart', icon: '📊' },
+    { id: 'pie', label: 'Pie Chart', icon: '🥧' },
+    { id: 'line', label: 'Line Chart', icon: '📈' },
+    { id: 'area', label: 'Area Chart', icon: '📊' },
   ];
 
   const renderChart = () => {
-    switch (activeChart) {
-      case 'line':
+    switch (activeTab) {
+      case 'bar':
         return (
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={studentProgressData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="students" 
-                stroke="#3B82F6" 
-                strokeWidth={3}
-                dot={{ fill: '#3B82F6', strokeWidth: 2, r: 6 }}
-                activeDot={{ r: 8 }}
+            <BarChart data={barData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+              <XAxis dataKey="name" stroke="#94a3b8" />
+              <YAxis stroke="#94a3b8" />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#1e293b', 
+                  border: '1px solid #475569',
+                  borderRadius: '8px',
+                  color: '#f8fafc'
+                }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="completion" 
-                stroke="#10B981" 
-                strokeWidth={3}
-                dot={{ fill: '#10B981', strokeWidth: 2, r: 6 }}
-                activeDot={{ r: 8 }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="satisfaction" 
-                stroke="#F59E0B" 
-                strokeWidth={3}
-                dot={{ fill: '#F59E0B', strokeWidth: 2, r: 6 }}
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
+              <Bar dataKey="value" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+            </BarChart>
           </ResponsiveContainer>
         );
-
       case 'pie':
         return (
           <ResponsiveContainer width="100%" height={400}>
             <PieChart>
               <Pie
-                data={coursePopularityData}
+                data={pieData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 outerRadius={120}
                 fill="#8884d8"
-                dataKey="students"
+                dataKey="value"
               >
-                {coursePopularityData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip />
-              <Legend />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#1e293b', 
+                  border: '1px solid #475569',
+                  borderRadius: '8px',
+                  color: '#f8fafc'
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         );
-
-      case 'radar':
+      case 'line':
         return (
           <ResponsiveContainer width="100%" height={400}>
-            <RadarChart data={skillRadarData}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="skill" />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} />
-              <Radar
-                name="Skill Level"
-                dataKey="value"
-                stroke="#3B82F6"
-                fill="#3B82F6"
-                fillOpacity={0.6}
+            <LineChart data={lineData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+              <XAxis dataKey="month" stroke="#94a3b8" />
+              <YAxis stroke="#94a3b8" />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#1e293b', 
+                  border: '1px solid #475569',
+                  borderRadius: '8px',
+                  color: '#f8fafc'
+                }}
               />
-              <Tooltip />
-            </RadarChart>
+              <Line type="monotone" dataKey="students" stroke="#0ea5e9" strokeWidth={3} dot={{ fill: '#0ea5e9', strokeWidth: 2, r: 6 }} />
+              <Line type="monotone" dataKey="growth" stroke="#8b5cf6" strokeWidth={3} dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 6 }} />
+            </LineChart>
           </ResponsiveContainer>
         );
-
-      case 'bar':
+      case 'area':
         return (
           <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={salaryIncreaseData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="experience" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="before" fill="#EF4444" name="Before Training" />
-              <Bar dataKey="after" fill="#10B981" name="After Training" />
-            </BarChart>
+            <AreaChart data={areaData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+              <XAxis dataKey="month" stroke="#94a3b8" />
+              <YAxis stroke="#94a3b8" />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#1e293b', 
+                  border: '1px solid #475569',
+                  borderRadius: '8px',
+                  color: '#f8fafc'
+                }}
+              />
+              <Area type="monotone" dataKey="completion" stackId="1" stroke="#0ea5e9" fill="#0ea5e9" fillOpacity={0.6} />
+              <Area type="monotone" dataKey="satisfaction" stackId="1" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.6} />
+            </AreaChart>
           </ResponsiveContainer>
         );
-
       default:
         return null;
     }
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+    <section className="py-20 bg-gradient-to-br from-slate-800 to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
         <motion.div 
           className="text-center mb-12"
           initial={{ opacity: 0, y: 30 }}
@@ -180,93 +152,67 @@ const DataVisualization = () => {
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Data-Driven Success Stories
+          <div className="inline-flex items-center gap-2 bg-sky-900 text-sky-300 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <BarChart className="h-4 w-4" />
+            <span>Data Insights</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-100 mb-6">
+            Visualize Your Success
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-            Explore our comprehensive analytics and see how DAxGENAI transforms careers through data.
+          <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto">
+            See how our training programs are transforming careers with real data and measurable results.
           </p>
         </motion.div>
 
-        {/* Chart Type Selector */}
-        <motion.div 
-          className="flex flex-wrap justify-center gap-4 mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          {chartTypes.map((chart) => (
-            <motion.button
-              key={chart.id}
-              onClick={() => setActiveChart(chart.id)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                activeChart === chart.id
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+        {/* Chart Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 ${
+                activeTab === tab.id
+                  ? 'bg-sky-500 text-white shadow-lg'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
               }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
-              {chart.name}
-            </motion.button>
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
           ))}
-        </motion.div>
+        </div>
 
         {/* Chart Container */}
         <motion.div 
-          className="bg-white rounded-2xl shadow-xl p-6 sm:p-8"
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          className="bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-600"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
         >
           {renderChart()}
         </motion.div>
 
-        {/* Key Metrics */}
+        {/* Stats Grid */}
         <motion.div 
           className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <motion.div 
-            className="bg-white rounded-xl p-6 shadow-lg text-center"
-            whileHover={{ scale: 1.05, y: -5 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="text-3xl font-bold text-blue-600 mb-2">2,000+</div>
-            <div className="text-gray-600">Students Trained</div>
-          </motion.div>
-          
-          <motion.div 
-            className="bg-white rounded-xl p-6 shadow-lg text-center"
-            whileHover={{ scale: 1.05, y: -5 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="text-3xl font-bold text-green-600 mb-2">98%</div>
-            <div className="text-gray-600">Success Rate</div>
-          </motion.div>
-          
-          <motion.div 
-            className="bg-white rounded-xl p-6 shadow-lg text-center"
-            whileHover={{ scale: 1.05, y: -5 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="text-3xl font-bold text-orange-600 mb-2">₹21L</div>
-            <div className="text-gray-600">Avg. Salary Increase</div>
-          </motion.div>
-          
-          <motion.div 
-            className="bg-white rounded-xl p-6 shadow-lg text-center"
-            whileHover={{ scale: 1.05, y: -5 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="text-3xl font-bold text-purple-600 mb-2">6</div>
-            <div className="text-gray-600">Months to Master</div>
-          </motion.div>
+          {[
+            { label: 'Students Trained', value: '2000+', icon: '👥' },
+            { label: 'Success Rate', value: '98%', icon: '🎯' },
+            { label: 'Average Salary Increase', value: '45%', icon: '💰' },
+            { label: 'Course Completion', value: '95%', icon: '✅' },
+          ].map((stat, index) => (
+            <div key={index} className="bg-slate-800 rounded-xl p-6 border border-slate-600 text-center">
+              <div className="text-3xl mb-2">{stat.icon}</div>
+              <div className="text-2xl font-bold text-slate-100 mb-1">{stat.value}</div>
+              <div className="text-sm text-slate-400">{stat.label}</div>
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>

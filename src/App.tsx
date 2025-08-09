@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -9,24 +10,24 @@ import AnimatedBackground from './components/AnimatedBackground';
 import PerformanceMonitor from './components/PerformanceMonitor';
 import ScrollToTop from './components/ScrollToTop';
 import ProgressIndicator from './components/ProgressIndicator';
+import SEO from './components/SEO';
 import { useAppStore } from './store/useAppStore';
 // import { authService } from './services/authService';
 
-// Lazy load components for better performance
-              const About = lazy(() => import('./components/About'));
-              const Courses = lazy(() => import('./components/Courses'));
-              const Testimonials = lazy(() => import('./components/Testimonials'));
-              const Pricing = lazy(() => import('./components/Pricing'));
-              const Blog = lazy(() => import('./components/Blog'));
-              const Contact = lazy(() => import('./components/Contact'));
-              const Footer = lazy(() => import('./components/Footer'));
-              const FAQ = lazy(() => import('./components/FAQ'));
-              const AITutor = lazy(() => import('./components/AITutor'));
-              const DataVisualization = lazy(() => import('./components/DataVisualization'));
-              const LiveChat = lazy(() => import('./components/LiveChat'));
-              const CourseFinder = lazy(() => import('./components/CourseFinder'));
-              const DemoBooking = lazy(() => import('./components/DemoBooking'));
-              const BlogPage = lazy(() => import('./pages/BlogPage'));
+// Lazy load components
+const About = lazy(() => import('./components/About'));
+const Courses = lazy(() => import('./components/Courses'));
+const Pricing = lazy(() => import('./components/Pricing'));
+const Testimonials = lazy(() => import('./components/Testimonials'));
+const FAQ = lazy(() => import('./components/FAQ'));
+const Contact = lazy(() => import('./components/Contact'));
+const Footer = lazy(() => import('./components/Footer'));
+const AITutor = lazy(() => import('./components/AITutor'));
+const LiveChat = lazy(() => import('./components/LiveChat'));
+const DataVisualization = lazy(() => import('./components/DataVisualization'));
+const Blog = lazy(() => import('./components/Blog'));
+const DemoBooking = lazy(() => import('./components/DemoBooking'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
 
 // Main Home Page Component
 const HomePage = () => {
@@ -47,6 +48,7 @@ const HomePage = () => {
 
                   return (
                   <div className="min-h-screen bg-slate-900 relative">
+                    <SEO />
                     <AnimatedBackground />
                     <Analytics />
                     <ProgressIndicator />
@@ -55,10 +57,6 @@ const HomePage = () => {
                   
                     <Suspense fallback={<LoadingSpinner />}>
                       <About />
-                    </Suspense>
-                    
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <CourseFinder />
                     </Suspense>
                     
                     <Suspense fallback={<LoadingSpinner />}>
@@ -129,18 +127,20 @@ function App() {
   //   }, [setUser, setTheme]);
 
   return (
-    <ErrorBoundary>
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/blog" element={
-            <Suspense fallback={<LoadingSpinner />}>
-              <BlogPage />
-            </Suspense>
-          } />
-        </Routes>
-      </Router>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <Router>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/blog" element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <BlogPage />
+              </Suspense>
+            } />
+          </Routes>
+        </Router>
+      </ErrorBoundary>
+    </HelmetProvider>
   );
 }
 

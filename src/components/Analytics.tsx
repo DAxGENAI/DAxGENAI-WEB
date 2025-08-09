@@ -10,6 +10,16 @@ export const trackEvent = (eventName: string, properties?: Record<string, any>) 
   // Custom analytics tracking
   console.log('Analytics Event:', eventName, properties);
   
+  // Generate session ID if not exists
+  let sessionId = sessionStorage.getItem('sessionId');
+  if (!sessionId) {
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    sessionStorage.setItem('sessionId', sessionId);
+  }
+  
+  // Get user ID if available
+  const userId = localStorage.getItem('userId') || null;
+  
   // Send to your analytics endpoint
   fetch('/api/analytics', {
     method: 'POST',
@@ -22,6 +32,8 @@ export const trackEvent = (eventName: string, properties?: Record<string, any>) 
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
       url: window.location.href,
+      userId,
+      sessionId,
     }),
   }).catch(console.error);
 };

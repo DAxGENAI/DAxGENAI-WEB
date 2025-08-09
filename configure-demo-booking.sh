@@ -18,7 +18,6 @@ if [ ! -f "server/credentials/service-account-key.json" ]; then
     echo "5. Download and move to server/credentials/service-account-key.json"
     echo ""
     read -p "Press Enter when you have the service account key ready..."
-fi
 
 # Get configuration values
 echo "📝 Please provide the following information:"

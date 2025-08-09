@@ -2,3 +2,4 @@ Gmail App Password :- higa cuch sauj xpxr
 Gmail ID :- daxgenai@gmail.com
 Google Calander Link:- https://calendar.google.com/calendar/u/0?cid=ZGF4Z2VuYWlAZ21haWwuY29t
 Google Gemini API Key :- AIzaSyDrw2K77m6CC7hqx4vJMBev8-RHrbdoVLY
+Firebase CLI :- 4/0AVMBsJjGRNV5FKFpZ9Vzvg1xm5L1p5iVv6Ok9nFe8PqUqiFdY-U9ZPqvAs-p0sQwJ7AeKQ
